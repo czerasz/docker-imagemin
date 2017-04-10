@@ -8,5 +8,5 @@ docker run -it \
            --name=optimize-images \
            --volumes-from=wordpress \
            --env=SRC_DIR=/var/www/html/wp-content/uploads/ \
-           czerasz/imagemin bash
+           czerasz/imagemin
 ```
