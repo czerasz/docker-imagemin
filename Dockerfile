@@ -1,7 +1,9 @@
 FROM node
 
+WORKDIR /usr/src/app/
+
 # Install required modules
-COPY package.json npm-shrinkwrap.json /usr/src/app/
+COPY ./package.json ./npm-shrinkwrap.json /usr/src/app/
 RUN npm install && npm cache clean
 
 # Copy optimization script
