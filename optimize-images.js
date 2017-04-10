@@ -18,6 +18,9 @@ const globOptions = {
 	absolute: true
 }
 
+var chunks = []
+var chunkSize = process.env.CHUNK_SIZE ? parseInt(process.env.CHUNK_SIZE, 10) : 10;
+
 glob('**/*.{jpg,png,gif,svg}', globOptions, (err, files) => {
 	if (err) {
 		console.error(err);
@@ -27,26 +30,32 @@ glob('**/*.{jpg,png,gif,svg}', globOptions, (err, files) => {
 	console.log('Optimize images:');
 	console.log('- ' + files.join("\n- "));
 
-	imagemin(files, {
-		use: [
-			imageminJpegtran(),
-			imageminPngquant({quality: '65-80'}),
-			imageminGifsicle(),
-			imageminSvgo({
-          plugins: [
-              {removeViewBox: false}
-          ]
-      })
-		]
-	}).then(optimizedFiles => {
-		for (var i = 0; i < files.length; i++) {
-			console.log('Overwrite ' + files[i]);
+	while (files.length > 0) {
+		chunks.push(files.splice(0, chunkSize));
+	}
 
-			fs.writeFile(files[i], optimizedFiles[i].data, (err) => {
-				if (err) {
-					console.error(err);
-				}
-			});
-		}
+	chunks.forEach((files) => {
+		imagemin(files, {
+			use: [
+				imageminJpegtran(),
+				imageminPngquant({quality: '65-80'}),
+				imageminGifsicle(),
+				imageminSvgo({
+	          plugins: [
+	              {removeViewBox: false}
+	          ]
+	      })
+			]
+		}).then(optimizedFiles => {
+			for (var i = 0; i < files.length; i++) {
+				console.log('Overwrite ' + files[i]);
+
+				fs.writeFile(files[i], optimizedFiles[i].data, (err) => {
+					if (err) {
+						console.error(err);
+					}
+				});
+			}
+		});
 	});
 })
