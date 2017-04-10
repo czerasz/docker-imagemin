@@ -40,6 +40,8 @@ glob('**/*.{jpg,png,gif,svg}', globOptions, (err, files) => {
 		]
 	}).then(optimizedFiles => {
 		for (var i = 0; i < files.length; i++) {
+			console.log('Overwrite ' + files[i]);
+
 			fs.writeFile(files[i], optimizedFiles[i].data, (err) => {
 				if (err) {
 					console.error(err);
